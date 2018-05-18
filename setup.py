@@ -8,5 +8,6 @@ setup(
     license='',
     author='Mohammad Amin Khashkhashi Moghaddam',
     author_email='amin.moghaddamv@gmail.com',
-    description='A simple tool for visualizing clusters using D3.js'
+    description='A simple tool for visualizing clusters using D3.js',
+    include_package_data=True
 )
