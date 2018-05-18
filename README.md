@@ -7,7 +7,7 @@ A tiny python library for visualizing hierarchical clusters using packed circle 
 You can install this package directly from github using the following command:
 
 ```sh
-pip3 install git+git://github.com/m30m/cluster_viz.git
+pip3 install git+git://github.com/m30m/cluster_pack.git
 ```
 
 # Usage
@@ -61,7 +61,7 @@ Nodes should either have the `children` attribute or `size` attribute if they ar
 If you are using jupyter notebook:
 
 ```python
-from cluster_viz import visualize_notebook
+from cluster_pack import visualize_notebook
 
 visualize_notebook(clusters, size=900) # size parameter is the width and height of output svg
 ```
@@ -69,12 +69,15 @@ visualize_notebook(clusters, size=900) # size parameter is the width and height 
 If you want the raw html:
 
 ```python
-from cluster_viz import visualize
+from cluster_pack import visualize
 
 html = visualize(clusters, size=900)
 
 with open('output.html','w') as output_file:
     output_file.write(html)
 ```
+
+
+# Screenshots
 
 ![Screenshot](screenshots/word_digits.png?raw=true "Sample Clustering output")
