@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(
-    name='ClusterViz',
+    name='cluster-pack',
     version='0.0.1',
     packages=[''],
     url='',
