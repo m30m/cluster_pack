@@ -25,8 +25,9 @@
     }
 
 </style>
-<div id="info-box" style="position: absolute; top: 10px; left: 10px"><h1>Slaam</h1></div>
-<svg style="display: flex;" width="$size" height="$size"></svg>
+<svg id="svg-$svg_id" width="$size" height="$size">
+</svg>
+<div id="info-box-$svg_id" style="position: absolute; top: 10px; right: 10px;height:${size}px;overflow: auto;background-color:rgba(255,255,255,0.85)"></div>
 <script src="http://requirejs.org/docs/release/2.3.5/minified/require.js"></script>
 <script>
     require.config({
@@ -36,10 +37,28 @@
     });
     require(['d3'], function (d3) {
 
-        var svg = d3.select("svg"),
+        var svg = d3.select("#svg-$svg_id"),
             margin = 20,
             diameter = +svg.attr("width"),
             g = svg.append("g").attr("transform", "translate(" + diameter / 2 + "," + diameter / 2 + ")");
+
+        var defs = svg.append("defs");
+        var image_count = 1;
+        svg.on("click", function () {
+            d3.select('#info-box-$svg_id').html("");
+            d3.event.stopPropagation();
+        });
+
+        function add_background_images(root) {
+            if (root.children)
+                root.children.map(add_background_images);
+            if (root.image) {
+                root.image_id = 'circle_bg_' + image_count;
+                image_count++;
+                var pattern = defs.append("pattern").attr("id", root.image_id).attr("height", "100%").attr("width", "100%").attr("patternContentUnits", "objectBoundingBox");
+                pattern.append("image").attr("xlink:href", root.image).attr("preserveAspectRatio", "none").attr("width", "1").attr("height", "1");
+            }
+        }
 
         var color = d3.scaleLinear()
             .domain([-1, 5])
@@ -71,6 +90,10 @@
                     return d.parent ? d.children ? "node" : "node node--leaf" : "node node--root";
                 })
                 .style("fill", function (d) {
+                    if (d.data.image_id)
+                        return 'url(#' + d.data.image_id + ')';
+                    if (d.data.color)
+                        return d.data.color;
                     return d.children ? color(d.depth) : null;
                 })
                 .on("dblclick", function (d) {
@@ -80,7 +103,8 @@
                     d3.event.stopPropagation();
                 })
                 .on("click", function (d) {
-                    document.getElementById('info-box').innerHTML = d.data.name;
+                    if (d.data.info)
+                        d3.select('#info-box-$svg_id').html(d.data.info);
                     d3.event.stopPropagation();
                 });
 
@@ -150,7 +174,7 @@
 
         viz_root = $json_root;
 
-
+        add_background_images(viz_root);
         plot(viz_root);
     });
 </script>
