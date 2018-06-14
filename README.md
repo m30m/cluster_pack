@@ -7,7 +7,7 @@ A tiny python library for visualizing hierarchical clusters using packed circle 
 You can install this package directly from github using the following command:
 
 ```sh
-pip3 install git+git://github.com/m30m/cluster_pack.git
+pip3 install git+https://github.com/m30m/cluster_pack.git
 ```
 
 # Usage
