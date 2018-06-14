@@ -40,14 +40,8 @@
         var svg = d3.select("#svg-$svg_id"),
             margin = 20,
             diameter = +svg.attr("width"),
-            g = svg.append("g").attr("transform", "translate(" + diameter / 2 + "," + diameter / 2 + ")");
+            g = svg.append("g");
 
-        var zoom_behavior = d3.zoom().scaleExtent([1, 10]).on("zoom", zoomed);
-
-        svg.call(zoom_behavior).on("dblclick.zoom", null).call(zoom_behavior.transform, d3.zoomIdentity.translate(diameter/2, diameter/2));
-        function zoomed() {
-          g.attr("transform", d3.event.transform);
-        }
         var defs = svg.append("defs");
         var image_count = 1;
         svg.on("click", function () {
@@ -86,8 +80,8 @@
                 });
 
             var focus = root,
-                nodes = pack(root).descendants(),
-                view;
+                nodes = pack(root).descendants();
+            var view = [0,0, root.r * 2 + margin];
 
             var circle = g.selectAll("circle")
                 .data(nodes)
@@ -130,25 +124,33 @@
 
             var node = g.selectAll("circle,text");
 
+            var zoom_behavior = d3.zoom().scaleExtent([1, 10]).on("zoom", zoomed);
+            svg.call(zoom_behavior).on("dblclick.zoom", null);
+            function zoomed() {
+                k = d3.event.transform.k;
+                dx = d3.event.transform.x ;
+                dy = d3.event.transform.y ;
+                zoomTo([(dx),(dy),(root.r * 2 + margin)/k])
+            }
+
             svg
                 .style("background", color(-1))
                 .on("dblclick", function () {
                     zoom(root);
                 });
 
-            zoomTo([root.x, root.y, root.r * 2 + margin]);
+            zoomTo(view);
 
             function zoom(d) {
-                svg.call(zoom_behavior.transform, d3.zoomIdentity.translate(diameter/2, diameter/2));
-                var focus0 = focus;
-                focus = d;
-
+                var focus = d;
                 var transition = d3.transition()
                     .duration(d3.event.altKey ? 7500 : 750)
                     .tween("zoom", function (d) {
-                        var i = d3.interpolateZoom(view, [focus.x, focus.y, focus.r * 2 + margin]);
+                        var i = d3.interpolateZoom(view, [(-focus.x+focus.r+margin/2), (-focus.y+focus.r+margin/2), focus.r * 2 + margin]);
                         return function (t) {
-                            zoomTo(i(t));
+                            var v=i(t);
+                            var k = diameter / v[2];
+                            zoom_behavior.transform(svg,d3.zoomIdentity.translate(v[0]*k, v[1]*k).scale((root.r * 2 + margin)/v[2]));
                         };
                     });
 
@@ -171,7 +173,7 @@
                 var k = diameter / v[2];
                 view = v;
                 node.attr("transform", function (d) {
-                    return "translate(" + (d.x - v[0]) * k + "," + (d.y - v[1]) * k + ")";
+                    return "translate(" + ((d.x + v[0]/k) * k) + "," + ((d.y + v[1]/k) * k)+ ")";
                 });
                 circle.attr("r", function (d) {
                     return d.r * k;
