@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='cluster-pack',
-    version='0.0.3',
+    version='0.0.4',
     packages=[''],
     url='',
     license='',

@@ -25,7 +25,7 @@ def visualize(root, size=960):
     resource_package = __name__
     template = pkg_resources.resource_filename(resource_package, 'template.html')
     tmpl = Template(open(template).read())
-    return tmpl.safe_substitute(json_root=json.dumps(root), size=size, svg_id=__get_random_id())
+    return tmpl.safe_substitute(json_root=json.dumps(root, ensure_ascii=False), size=size, svg_id=__get_random_id())
 
 
 def visualize_notebook(*args, **kwargs):
